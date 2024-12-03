@@ -31,9 +31,11 @@ function startfill()
         var bil = (i+2).toString().padStart(2, '0');
         let band = 5;
         let uband = 0;
-        if (marks[i] >= parseInt(document.getElementById('TP5').value)) {band = 8; uband =Math.floor(Math.random() * (1 - 0 + 1) ) + 0;}
-        else if (marks[i] >= parseInt(document.getElementById('TP4').value)) {band = 7; uband = Math.floor(Math.random() * (3 - 2 + 1) ) + 2;}
-        else {band = 6; uband=Math.floor(Math.random() * (5 - 4 + 1) ) + 4;}
+        if (marks[i] >= parseInt(document.getElementById('UB9').value)) {band = 9; uband=0}
+        else if (marks[i] >= parseInt(document.getElementById('UB8').value)) {band = 8; uband=1}
+        else if (marks[i] >= parseInt(document.getElementById('UB7').value)) {band = 7; uband=2}
+        else if (marks[i] >= parseInt(document.getElementById('UB6').value)) {band = 6; uband=3}
+        else {band = 5; uband=Math.floor(Math.random() * (5 - 4 + 1) ) + 4;}
         for (let j=1; j<=9; j++)
         {
             var id = `GVSQLResult_ctl${bil}_chkM0${j}_1`;
@@ -55,23 +57,17 @@ function createallelements()
     // Append the container to the body
     document.body.appendChild(container);
 
-    const textbox2 = document.createElement('input');
-    textbox2.type = 'text';
-    textbox2.id = 'TP4';
-    textbox2.placeholder = 'TP4';
-    textbox2.style.display = 'block';
-    textbox2.style.margin = '10px 0';
-    textbox2.style.padding = '5px';
-    textbox2.style.width = '50px';
-
-    const textbox3 = document.createElement('input');
-    textbox3.type = 'text';
-    textbox3.id = 'TP5';
-    textbox3.placeholder = 'TP5';
-    textbox3.style.display = 'block';
-    textbox3.style.margin = '10px 0';
-    textbox3.style.padding = '5px';
-    textbox3.style.width = '50px';
+    for (let i=0; i<4; i++) {
+        let textbox = document.createElement('input');
+        textbox.type = 'text';
+        textbox.id = 'UB'+(i+6);
+        textbox.placeholder = 'T'+(i+6);
+        textbox.style.display = 'block';
+        textbox.style.margin = '10px 0';
+        textbox.style.padding = '5px';
+        textbox.style.width = '50px';
+        container.appendChild(textbox);
+    }
 
     const textarea = document.createElement('textarea');
     textarea.id = 'marks';
@@ -103,8 +99,6 @@ function createallelements()
     // Add an event listener to the button
     startButton.addEventListener('click', startfill);
     // Append all elements to the container
-    container.appendChild(textbox2);
-    container.appendChild(textbox3);
     container.appendChild(textarea);
     container.appendChild(startButton);
 }
