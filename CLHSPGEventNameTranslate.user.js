@@ -41,10 +41,12 @@
 
     function addTranslateButton() {
         const submitButton = document.getElementById('cmdSubmit');
+        const eventNameInput = document.getElementById('txtEventName');
         if (submitButton) {
             const translateButton = document.createElement('button');
             translateButton.type = "button";
             translateButton.textContent = 'Translate';
+            translateButton.style = "margin-top:3px"
             translateButton.addEventListener('click', function() {
                 const eventName = document.getElementById('txtEventName').value;
                 if (eventName) {
@@ -56,7 +58,10 @@
                 }
             });
             //submitButton.parentNode.insertBefore(translateButton, submitButton.nextSibling);
-            document.getElementById("txtEventName").parentElement.insertBefore(translateButton,document.getElementById(txtEventNameC));
+            //document.getElementById("txtEventName").parentNode.insertBefore(translateButton,document.getElementById(txtEventNameC).nextSibling);
+            const buttonContainer = document.createElement('div');
+            buttonContainer.appendChild(translateButton);
+            eventNameInput.parentNode.insertBefore(buttonContainer, eventNameInput.nextSibling);
         } else {
             console.error("Submit button not found.");
         }
