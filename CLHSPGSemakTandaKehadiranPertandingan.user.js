@@ -23,6 +23,7 @@
     document.body.appendChild(app);
     document.getElementById ("semak").addEventListener("click", semak, false);
 })();
+
 function semak()
 {
     const ename = document.getElementById("ename").value;
@@ -43,6 +44,7 @@ function semak()
     let completedRequests = 0;
     let data = "";
     let nu = 1;
+    let deadlinedate = "";
     for (let i=0; i<unit.length; i++) {
         GM_xmlhttpRequest({
             method: "GET",
@@ -59,6 +61,7 @@ function semak()
                 let cname = doc.getElementById("lblClubName").textContent.split(" ---")[0];
                 for (let i=0; i<td.length; i++)
                     if(td[i].textContent.includes(ename)) {
+                        deadlinedate=deadline(td[i+2].textContent);
                         if(!td[i+7].getElementsByTagName("img")[0].src.includes("pass.png"))
                         {
                             data+=nu+". "+cname+"<br/>";
@@ -68,7 +71,7 @@ function semak()
                 completedRequests++;
                 if (completedRequests === totalRequests) {
                     console.log(data);
-                    document.getElementById("noupdate").innerHTML = `Senarai unit yang belum tanda kehadiran untuk<br/>${ename}:<br/>${data}`;
+                    document.getElementById("noupdate").innerHTML = `Senarai unit yang belum tanda kehadiran untuk<br/>${ename}<br/>${deadlinedate}:<br/>${data}`;
                 }
             },
             onerror: function(error) {
@@ -76,4 +79,46 @@ function semak()
             }
         });
     }
+}
+
+function deadline(startDateStr)
+{
+    function daysRemaining(dueDateStr) {
+        const today = new Date(); // Get today's date
+        const dueDate = new Date(dueDateStr); // Convert string to Date object
+        const diffTime = dueDate - today; // Difference in milliseconds
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // Convert to days and include today
+        return diffDays > 0 ? diffDays : 0; // Ensure it doesn't return negative values
+    }
+
+    function getMalayDay(englishDay) {
+        const days = {
+            "Sunday": "Ahad",
+            "Monday": "Isnin",
+            "Tuesday": "Selasa",
+            "Wednesday": "Rabu",
+            "Thursday": "Khamis",
+            "Friday": "Jumaat",
+            "Saturday": "Sabtu"
+        };
+        return days[englishDay] || englishDay; // Return translated day or default to English if not found
+    }
+
+    const [day, month, year] = startDateStr.split("-"); // Split into parts
+    const deadlineDate = new Date(`${month} ${day}, ${year}`); // Convert to Date object
+
+    // Add 6 days (since the current day is included)
+    deadlineDate.setDate(deadlineDate.getDate() + 6);
+
+    // Format the deadline date as "DD-MMM-YYYY"
+    const options = { day: '2-digit', month: 'short', year: 'numeric' };
+    const lastDayStr = deadlineDate.toLocaleDateString('en-GB', options).replace(/ /g, '-');
+
+    // Get the day of the week (Monday, Tuesday, etc.)
+    const dayOfWeek = deadlineDate.toLocaleDateString('en-GB', { weekday: 'long' });
+    const remainingDays = daysRemaining(deadlineDate);
+    if (remainingDays === 0)
+        return `HARI ini (${getMalayDay(dayOfWeek)}, ${lastDayStr}) ialah hari terakhir untuk mengemas kini kehadiran!!!`;
+    else
+        return `Hari terakhir untuk mengemas kini kehadiran: ${getMalayDay(dayOfWeek)}, ${lastDayStr}`;
 }
