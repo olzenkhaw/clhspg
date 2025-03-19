@@ -87,8 +87,8 @@ function deadline(startDateStr)
         const today = new Date(); // Get today's date
         const dueDate = new Date(dueDateStr); // Convert string to Date object
         const diffTime = dueDate - today; // Difference in milliseconds
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // Convert to days and include today
-        return diffDays > 0 ? diffDays : 0; // Ensure it doesn't return negative values
+        return Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1; // Convert to days and include today
+        //return diffDays > 0 ? diffDays : 0; // Ensure it doesn't return negative values
     }
 
     function getMalayDay(englishDay) {
@@ -119,6 +119,8 @@ function deadline(startDateStr)
     const remainingDays = daysRemaining(deadlineDate);
     if (remainingDays === 0)
         return `HARI ini (${getMalayDay(dayOfWeek)}, ${lastDayStr}) ialah hari terakhir untuk mengemas kini kehadiran!!!`;
+    else if (remainingDays < 0)
+        return `Tempoh untuk mengisi kehadiran telah berakhir (${getMalayDay(dayOfWeek)}, ${lastDayStr})!.`;
     else
         return `Hari terakhir untuk mengemas kini kehadiran: ${getMalayDay(dayOfWeek)}, ${lastDayStr}`;
 }
