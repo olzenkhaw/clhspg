@@ -70,7 +70,6 @@ function semak()
                     }
                 completedRequests++;
                 if (completedRequests === totalRequests) {
-                    console.log(data);
                     document.getElementById("noupdate").innerHTML = `Senarai unit yang belum tanda kehadiran untuk<br/>${ename}<br/>${deadlinedate}:<br/>${data}`;
                 }
             },
