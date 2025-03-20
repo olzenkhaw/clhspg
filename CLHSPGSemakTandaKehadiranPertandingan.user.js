@@ -43,7 +43,9 @@ function semak()
     let totalRequests = unit.length;
     let completedRequests = 0;
     let data = "";
+    let data2 = "";
     let nu = 1;
+    let nu2 = 1;
     let deadlinedate = "";
     for (let i=0; i<unit.length; i++) {
         GM_xmlhttpRequest({
@@ -67,10 +69,16 @@ function semak()
                             data+=nu+". "+cname+"<br/>";
                             nu++;
                         }
+                        else
+                        {
+                            data2+=nu2+". "+cname+"<br/>";
+                            nu2++;
+                        }
                     }
                 completedRequests++;
                 if (completedRequests === totalRequests) {
                     document.getElementById("noupdate").innerHTML = `Senarai unit yang belum tanda kehadiran untuk<br/>${ename}<br/>${deadlinedate}:<br/>${data}`;
+                    document.getElementById("noupdate").innerHTML += `<br/><br/>Senarai unit yang sudah tanda kehadiran untuk<br/>${ename}:<br/>${data2}`;
                 }
             },
             onerror: function(error) {
