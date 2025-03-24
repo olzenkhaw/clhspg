@@ -13,7 +13,7 @@
     'use strict';
     const app = document.createElement("div");
     app.innerHTML = `
-    <button id="semak2">Semak Attendance 1 Day before due date</button><div id="noupdate2"></div>`;
+    <button id="semak2">Semak Attendance 1 Day before due date</button><div id="noupdate2"></div><br/><div id="noupdate3"></div>`;
     document.body.appendChild(app);
     document.getElementById ("semak2").addEventListener("click", semak2, false);
 })();
@@ -37,7 +37,9 @@ function semak2()
                  "S01":3, "S02":3, "S03":3, "S04":3, "S06":3, "S07":3, "S08":3, "S09":3,
                  "S10":3, "S11":3, "S12":3, "S13":3, "S14":3, "S15":3, "S26":3, "S27":3};
     let n=1;
-    document.getElementById("noupdate").innerHTML="Senarai unit yang belum tanda kehadiran untuk aktiviti mingguan<br/>";
+    let n2=1;
+    document.getElementById("noupdate2").innerHTML="Senarai unit yang belum tanda kehadiran untuk aktiviti mingguan<br/>";
+    document.getElementById("noupdate3").innerHTML="Senarai aktiviti yang waktu tanda kehadiran telah tamat!<br/>";
     for (let i=0; i<unit.length; i++) {
         GM_xmlhttpRequest({
             method: "GET",
@@ -58,9 +60,14 @@ function semak2()
                     let ename = td[1].textContent.trim();
                     let edate = td[3].textContent.trim();
                     let deadlinedate=deadline(edate);
-                    if(deadlinedate && !td[8].getElementsByTagName("img")[0].src.includes("pass.png"))
+                    if(deadlinedate == -1 && !td[8].getElementsByTagName("img")[0].src.includes("pass.png"))
                     {
-                        document.getElementById("noupdate").innerHTML+=`${n}. ${cname} - ${ename} Tarikh:${edate},${deadlinedate}<br/>`;
+                        document.getElementById("noupdate3").innerHTML+=`${n2}. ${cname} - ${ename} Tarikh aktivti:${edate}<br/>`;
+                        n2++;
+                    }
+                    if(deadlinedate != -1 && deadlinedate != false && !td[8].getElementsByTagName("img")[0].src.includes("pass.png"))
+                    {
+                        document.getElementById("noupdate2").innerHTML+=`${n}. ${cname} - ${ename} Tarikh aktiviti:${edate},${deadlinedate}<br/>`;
                         n++;
                     }
                 }
@@ -107,7 +114,9 @@ function deadline(startDateStr)
     // Get the day of the week (Monday, Tuesday, etc.)
     const dayOfWeek = deadlineDate.toLocaleDateString('en-GB', { weekday: 'long' });
     const remainingDays = daysRemaining(deadlineDate);
-    if ((remainingDays >= 0) && (remainingDays <= 1))
+    if (remainingDays < 0)
+        return -1;
+    else if ((remainingDays >= 0) && (remainingDays <= 1))
         return `Tarikh akhir mengisi kehadiran: ${lastDayStr}, tinggal ${remainingDays} hari sahaja!`;
     else
         return false;
