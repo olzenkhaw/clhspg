@@ -19,7 +19,7 @@
         <option value="2" selected>Persatuan</option>
         <option value="3">Sukan</option>
     </select>
-    <button id="semak">Semak</button><div id="noupdate"></div>`;
+    <button id="semak">Semak</button><div id="noupdate1"></div><br/><div id="noupdate2"></div>`;
     document.body.appendChild(app);
     document.getElementById ("semak").addEventListener("click", semak, false);
 })();
@@ -42,8 +42,8 @@ function semak()
     else unit = sukan;
     let totalRequests = unit.length;
     let completedRequests = 0;
-    let data = "";
-    let data2 = "";
+    document.getElementById("noupdate1").innerHTML = `Senarai unit yang belum tanda kehadiran untuk<br/>${ename}<br/>`;
+    document.getElementById("noupdate2").innerHTML = `Senarai unit yang sudah tanda kehadiran untuk<br/>${ename}:<br/>`;
     let nu = 1;
     let nu2 = 1;
     let deadlinedate = "";
@@ -63,23 +63,24 @@ function semak()
                 let cname = doc.getElementById("lblClubName").textContent.split(" ---")[0];
                 for (let i=0; i<td.length; i++)
                     if(td[i].textContent.includes(ename)) {
-                        deadlinedate=deadline(td[i+2].textContent);
+                        if (deadlinedate == "")
+                        {
+                            deadlinedate=deadline(td[i+2].textContent);
+                            document.getElementById("noupdate1").innerHTML += `(${deadlinedate})<br/>`;
+                        }
+                        else
+                            deadlinedate=deadline(td[i+2].textContent);
                         if(!td[i+7].getElementsByTagName("img")[0].src.includes("pass.png"))
                         {
-                            data+=nu+". "+cname+"<br/>";
+                            document.getElementById("noupdate1").innerHTML+=`${nu}. ${cname}<br/>`;
                             nu++;
                         }
                         else
                         {
-                            data2+=nu2+". "+cname+"<br/>";
+                            document.getElementById("noupdate2").innerHTML+=nu2+". "+cname+"<br/>";
                             nu2++;
                         }
                     }
-                completedRequests++;
-                if (completedRequests === totalRequests) {
-                    document.getElementById("noupdate").innerHTML = `Senarai unit yang belum tanda kehadiran untuk<br/>${ename}<br/>${deadlinedate}:<br/>${data}`;
-                    document.getElementById("noupdate").innerHTML += `<br/><br/>Senarai unit yang sudah tanda kehadiran untuk<br/>${ename}:<br/>${data2}`;
-                }
             },
             onerror: function(error) {
                 console.error("Error fetching data:", error);
