@@ -116,8 +116,10 @@ function deadline(startDateStr)
     const remainingDays = daysRemaining(deadlineDate);
     if (remainingDays < 0)
         return -1;
-    else if ((remainingDays >= 0) && (remainingDays <= 1))
-        return `Tarikh akhir mengisi kehadiran: ${lastDayStr}, tinggal ${remainingDays} hari sahaja!`;
+    else if ((remainingDays >= 0) && (remainingDays == 1))
+        return `Tarikh akhir mengisi kehadiran: <b>ESOK</b> (${lastDayStr})`;
+    else if ((remainingDays >= 0) && (remainingDays == 0))
+        return `Tarikh akhir mengisi kehadiran: <b>HARI INI</b> (${lastDayStr})!!!`;
     else
         return false;
 }
