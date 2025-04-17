@@ -40,7 +40,8 @@ async function semak2()
     let n2=1;
     document.getElementById("noupdate3").innerHTML="Senarai unit yang belum tanda kehadiran untuk aktiviti mingguan<br/>";
     document.getElementById("noupdate4").innerHTML="Senarai aktiviti yang waktu tanda kehadiran telah tamat!<br/>";
-    for (let i=0; i<unit.length; i++) {
+    let total = unit.length;
+    for (let i=0; i<total; i++) {
         GM_xmlhttpRequest({
             method: "GET",
             url: `http://clhspg.com/${window.location.href.split("/")[3]}/frmLSTGerKoClubUpdEvent.aspx?prmAction=Inquiry&prmClubCode=${unit[i]}&prmClubCategory=${cat[unit[i]]}&prmGroup=1&prmOption=COMMON&prmS=p&prmSF=A.Club_Code`,
@@ -71,12 +72,14 @@ async function semak2()
                         n++;
                     }
                 }
+                if (i == total - 1) alert("Finish");
             },
             onerror: function(error) {
                 console.error("Error fetching data:", error);
             }
         });
     }
+
 }
 
 async function deadline(startDateStr, unitcode)
