@@ -195,7 +195,7 @@ async function ketuakelab(unitcode)
     const text = await response.text();
     let parser = new DOMParser();
     let doc = parser.parseFromString(text, "text/html");
-    let ketua = doc.getElementsByTagName("td")[15].getElementsByTagName("span")[0].innerHTML.split("<br>")[0].split("<span")[0];
+    let ketua = doc.getElementsByTagName("td")[15].getElementsByTagName("span")[0].innerHTML.split("<br>")[0].split("<span")[0].trim();
     console.log(ketua);
     return ketua;
 }
