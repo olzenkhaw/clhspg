@@ -6,7 +6,7 @@
 // @author       You
 // @match        http://clhspg.com/*/frmLstEntStudentProfile*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=clhspg.com
-// @grant        none
+// @grant        GM_setClipboard
 // ==/UserScript==
 
 (function() {
@@ -26,7 +26,7 @@
 
 })();
 
-function exportcsv()
+async function exportcsv()
 {
     let table = document.getElementById("GVSQLResult");
     let headerRow = table.querySelector('tbody > tr:nth-child(1)');
@@ -91,6 +91,7 @@ function exportcsv()
 
     rows = table.querySelectorAll('tr');
     const csvData = [];
+    let copydata = "";
 
     for (const row of rows) {
         const cells = row.querySelectorAll('th, td');
@@ -100,8 +101,8 @@ function exportcsv()
             const text = cell.textContent.trim().replace(/"/g, '""'); // Escape double quotes
             rowData.push(`"${text}"`);
         }
-
         csvData.push(rowData.join(','));
+        copydata += rowData.join('\t') + "\n";
     }
 
     const csvContent = "\uFEFF" + csvData.join('\n');
@@ -110,4 +111,6 @@ function exportcsv()
     link.href = URL.createObjectURL(blob);
     link.download = 'table_data.csv';
     link.click();
+    GM_setClipboard(copydata);
+    console.log(copydata);
 }
