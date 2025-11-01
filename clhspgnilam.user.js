@@ -1,20 +1,25 @@
 // ==UserScript==
-// @name         CLHSPG ExtraCC Fast Navigator + Nilam Auto-Select (Manual Save)
-// @namespace    clhspg_extracc_navigator
-// @version      1.2
-// @description  Navigate student pages and auto-select Nilam mark (you click Save manually)
+// @name         CLHSPG Nilam Autofill
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Quickly navigate between students on frmENTExtraCC.aspx and auto-select Nilam mark radio button
 // @author       You
 // @match        http://clhspg.com/*/frmENTExtraCC.aspx*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=clhspg.com
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_registerMenuCommand
-// @run-at       document-idle
 // ==/UserScript==
 
 (function() {
   'use strict';
 
-  const NILAM_ID_BY_MARK = {
+  /*** --- Utilities --- ***/
+  const qs = new URLSearchParams(location.search);
+  const getParam = k => qs.get(k) || '';
+
+  // Map Nilam mark -> radio button ID
+  const nilamMap = {
     10: 'opt4_C41',
     9:  'opt4_C42',
     8:  'opt4_C43',
@@ -22,209 +27,284 @@
     6:  'opt4_C45'
   };
 
-  const KEY_NEXT = 'Alt+N';
-  const KEY_PREV = 'Alt+P';
-  const KEY_LOAD = 'Alt+L';
-  const KEY_SETM = 'Alt+M';
-
-  const STORAGE = {
-    LIST: 'clhspg_extracc_list',
-    INDEX: 'clhspg_extracc_index',
-    HISTORY: 'clhspg_extracc_hist'
-  };
-
-  function notify(...args) { console.log('[ExtraCC]', ...args); }
-
-  function parseQuery(qs) {
-    const params = {};
-    new URLSearchParams(qs).forEach((v, k) => params[k] = v);
-    return params;
+  // Wait for an element by id (or any CSS selector)
+  function waitForSelector(selector, timeoutMs = 15000) {
+    return new Promise((resolve, reject) => {
+      const existing = document.querySelector(selector);
+      if (existing) return resolve(existing);
+      const obs = new MutationObserver(() => {
+        const el = document.querySelector(selector);
+        if (el) {
+          obs.disconnect();
+          resolve(el);
+        }
+      });
+      obs.observe(document.documentElement, { childList: true, subtree: true });
+      setTimeout(() => {
+        obs.disconnect();
+        reject(new Error('Timeout waiting for ' + selector));
+      }, timeoutMs);
+    });
   }
 
-  function getSessionPrefix() {
-    const path = location.pathname;
-    const i = path.toLowerCase().indexOf('/frmentextracc.aspx');
-    const seg = i >= 0 ? path.substring(0, i) : '';
-    return `${location.origin}${seg || ''}`;
+  // Build the stable page base preserving the (S(...)) path segment
+  function buildBaseUrl() {
+    // Strip everything after frmENTExtraCC.aspx
+    const basePath = location.pathname.replace(/frmENTExtraCC\.aspx.*/i, 'frmENTExtraCC.aspx');
+    return location.origin + basePath;
   }
 
-  function buildStudentURL(id, cls, year, nilam) {
-    const base = getSessionPrefix();
-    const url = new URL(`${base}/frmENTExtraCC.aspx`, location.href);
-    url.searchParams.set('prmAction','Edit');
-    url.searchParams.set('prmStudentID', id);
-    url.searchParams.set('prmYear', year);
-    url.searchParams.set('prmClass', cls);
-    if (nilam != null) url.searchParams.set('prmNilam', String(nilam));
-    return url.toString();
+  function buildStudentUrl(studentID, year, cls) {
+    const base = buildBaseUrl();
+    const p = new URLSearchParams({
+      prmAction: 'Edit',
+      prmStudentID: studentID,
+      prmYear: year,
+      prmClass: cls
+    });
+    return `${base}?${p.toString()}`;
   }
+
+  // Persisted state
+  const STORE_KEY_LIST  = 'clhspg_nilam_list_v1';   // array of {id, class, year, mark}
+  const STORE_KEY_INDEX = 'clhspg_nilam_index_v1';  // number
 
   function loadList() {
-    try { return JSON.parse(GM_getValue(STORAGE.LIST, '[]')); }
-    catch { return []; }
+    return GM_getValue(STORE_KEY_LIST, []);
   }
-  function saveList(arr) { GM_setValue(STORAGE.LIST, JSON.stringify(arr || [])); }
-
-  function getIndex() {
-    const n = parseInt(GM_getValue(STORAGE.INDEX, '0'), 10);
-    return isNaN(n) ? 0 : n;
+  function saveList(arr) {
+    GM_setValue(STORE_KEY_LIST, arr);
   }
-  function setIndex(n) { GM_setValue(STORAGE.INDEX, String(n)); }
-
-  function loadHistory() {
-    try { return JSON.parse(GM_getValue(STORAGE.HISTORY, '[]')); }
-    catch { return []; }
+  function loadIndex() {
+    return GM_getValue(STORE_KEY_INDEX, 0);
   }
-  function saveHistory(arr) { GM_setValue(STORAGE.HISTORY, JSON.stringify(arr || [])); }
-
-  function smartSplit(line) {
-    return line.trim().replace(/\s+/g,' ').split(/[,\s]/).filter(Boolean);
+  function saveIndex(i) {
+    GM_setValue(STORE_KEY_INDEX, i);
   }
 
-  function parsePastedList(text) {
-    const rows = [];
-    text.split(/\r?\n/).forEach(line => {
-      if (!line.trim()) return;
-      const p = smartSplit(line);
-      if (p.length < 3) return;
-      const obj = { id:p[0].toUpperCase(), cls:p[1], year:p[2], mark:p[3] ? Number(p[3]) : undefined };
-      rows.push(obj);
-    });
-    return rows;
-  }
-
-  function waitFor(fn, timeoutMs = 8000, intervalMs = 200) {
-    return new Promise((resolve, reject) => {
-      const start = Date.now();
-      const timer = setInterval(() => {
-        try {
-          const val = fn();
-          if (val) { clearInterval(timer); resolve(val); }
-          else if (Date.now() - start > timeoutMs) { clearInterval(timer); reject(new Error('waitFor: timeout')); }
-        } catch (e) {
-          clearInterval(timer); reject(e);
-        }
-      }, intervalMs);
-    });
-  }
-
-  async function setNilamMark(mark) {
-    const id = NILAM_ID_BY_MARK[mark];
-    if (!id) { notify(`No radio id mapping for mark ${mark}`); return false; }
-    try {
-      const radio = await waitFor(() => document.getElementById(id));
-      if (radio) {
-        radio.click();
-        notify(`Nilam mark ${mark} -> clicked #${id}`);
-        return true;
-      }
-    } catch (e) {
-      notify(`Radio #${id} not found for mark ${mark}`);
+  // Parse textarea lines: "D6880,3TB2,2025,10" (ID, Class, Year, Nilam)
+  function parseLines(text) {
+    const out = [];
+    const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    for (const line of lines) {
+      // Allow CSV or spaced formats. Split by comma first; fallback to whitespace.
+      let parts = line.includes(',') ? line.split(',') : line.split(/\s+/);
+      parts = parts.map(s => s.trim());
+      const [id, cls, year, markStr] = parts;
+      if (!id || !cls) continue;
+      const yearNum = year ? String(year).trim() : (getParam('prmYear') || new Date().getFullYear());
+      const mark = markStr ? Number(markStr) : NaN;
+      out.push({ id, class: cls, year: yearNum, mark: isFinite(mark) ? mark : null });
     }
-    return false;
+    return out;
   }
 
-  function goToIndex(idx) {
-    const list = loadList();
-    if (!list.length) { notify('List empty'); return; }
-    if (idx < 0 || idx >= list.length) { notify('Index out of range'); return; }
-    setIndex(idx + 1);
-    const row = list[idx];
-    const url = buildStudentURL(row.id, row.cls, row.year, row.mark);
-    const hist = loadHistory();
-    hist.push(idx);
-    saveHistory(hist);
-    location.href = url;
-  }
-
-  function goNext() { goToIndex(getIndex()); }
-  function goPrev() {
-    const hist = loadHistory();
-    if (!hist.length) return;
-    hist.pop();
-    const prevIdx = hist.pop();
-    saveHistory(hist);
-    if (prevIdx !== undefined) { setIndex(prevIdx + 1); goToIndex(prevIdx); }
-  }
-
-  function readURLNilamParamIfAny() {
-    const params = parseQuery(location.search);
-    const n = Number(params.prmNilam);
-    return [6,7,8,9,10].includes(n) ? n : null;
-  }
-
-  function findMarkForCurrentStudentFromList() {
-    const params = parseQuery(location.search);
-    const id = (params.prmStudentID || '').toUpperCase();
-    if (!id) return null;
-    const list = loadList();
-    const row = list.find(r => r.id === id);
-    return row?.mark ?? null;
-  }
-
-  function addMiniOverlay() {
-    const params = parseQuery(location.search);
-    const div = document.createElement('div');
-    div.style.cssText = `
-      position: fixed; top: 10px; right: 10px; z-index: 999999;
-      background: rgba(0,0,0,0.65); color: #fff; padding: 10px 12px;
-      font: 12px/1.4 -apple-system,system-ui,Segoe UI,Roboto,Arial;
-      border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    `;
-    div.innerHTML = `
-      <div style="font-weight:600; margin-bottom:6px;">ExtraCC Helper</div>
-      <div><b>ID</b>: ${params.prmStudentID || '-'}</div>
-      <div><b>Class</b>: ${params.prmClass || '-'}</div>
-      <div><b>Year</b>: ${params.prmYear || '-'}</div>
-      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.2);margin:6px 0;">
-      <div><b>${KEY_NEXT}</b>: Next</div>
-      <div><b>${KEY_PREV}</b>: Prev</div>
-      <div><b>${KEY_LOAD}</b>: Load list</div>
-      <div><b>${KEY_SETM}</b>: Set Nilam</div>
-      <div>AutoSave: <b>OFF (manual)</b></div>
-    `;
-    document.body.appendChild(div);
-  }
-
-  async function onStudentPage() {
-    const direct = readURLNilamParamIfAny();
-    const mark = direct ?? findMarkForCurrentStudentFromList();
-    if (mark != null) await setNilamMark(mark);
-    addMiniOverlay();
-  }
-
-  function promptAndLoadList() {
-    const sample = ['D6880,3TB2,2025,9','D7001,3TB2,2025,8','D7002,3TB2,2025,10'].join('\n');
-    const pasted = prompt('Paste list (ID,Class,Year,Nilam):', sample);    
-    if (!pasted) return;
-    const rows = parsePastedList(pasted);
-    if (!rows.length) { alert('No valid lines'); return; }
-    saveList(rows);
-    setIndex(0);
-    saveHistory([]);
-    alert(`Loaded ${rows.length} students. Use ${KEY_NEXT} to go to the first one.`);
-  }
-
-  function onHotkeys(e) {
-    if (e.altKey && !e.shiftKey && !e.ctrlKey) {
-      const key = e.key.toUpperCase();
-      if (key === 'N') { e.preventDefault(); goNext(); }
-      if (key === 'P') { e.preventDefault(); goPrev(); }
-      if (key === 'L') { e.preventDefault(); promptAndLoadList(); }
-      if (key === 'M') {
-        e.preventDefault();
-        const val = prompt('Enter Nilam mark (6–10):','9');
-        const mark = Number(val);
-        if ([6,7,8,9,10].includes(mark)) setNilamMark(mark);
-        else alert('Invalid mark. Use 6–10.');
+  /*** --- Floating Control Panel --- ***/
+  function injectPanel() {
+    const style = document.createElement('style');
+    style.textContent = `
+      .clhspg-nav {
+        position: fixed; top: 200px; right: 10px; z-index: 999999;
+        background: #ffffff; border: 1px solid #ddd; border-radius: 12px;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.15); padding: 10px; width: 460px; font: 12px/1.3 system-ui, Arial;
       }
+      .clhspg-nav h3 { margin: 0 0 6px; font-size: 14px; }
+      .clhspg-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+      .clhspg-row input[type="text"], .clhspg-row input[type="number"] {
+        flex: 1; padding: 6px 8px; border: 1px solid #ccc; border-radius: 8px;
+      }
+      .clhspg-row button {
+        padding: 6px 10px; border: 1px solid #888; background: #f7f7f7; border-radius: 8px; cursor: pointer;
+      }
+      .clhspg-row button:hover { background: #eee; }
+      .clhspg-textarea { width: 100%; height: 90px; box-sizing: border-box; padding: 6px 8px; border: 1px solid #ccc; border-radius: 8px; }
+      .clhspg-note { color: #555; font-size: 11px; }
+      .clhspg-bad { color: #b00020; }
+      .clhspg-good { color: #0b7a0b; }
+      .clhspg-chip { background:#eef; border:1px solid #cbd; padding:2px 6px; border-radius:999px; font-size:11px; }
+    `;
+    document.head.appendChild(style);
+
+    const box = document.createElement('div');
+    box.className = 'clhspg-nav';
+    box.innerHTML = `
+      <h3>ExtraCC Quick Nav <span class="clhspg-chip">Alt+N Next • Alt+P Prev</span></h3>
+
+      <div class="clhspg-row">
+        <input type="text" id="cl-id"   placeholder="Student ID (e.g., D6880)">
+        <input type="text" id="cl-class" placeholder="Class (e.g., 3TB2)">
+        <input type="number" id="cl-year" placeholder="Year" min="2000" max="2100" style="width: 80px;">
+      </div>
+      <div class="clhspg-row">
+        <input type="number" id="cl-mark" placeholder="Nilam mark 10–6" min="6" max="10">
+        <button id="cl-open">Open</button>
+        <button id="cl-select">Select Mark</button>
+      </div>
+
+      <div class="clhspg-row">
+        <button id="cl-prev">◀ Prev</button>
+        <div id="cl-status" class="clhspg-note">List: <span id="cl-count">0</span> | Index: <span id="cl-idx">0</span></div>
+        <button id="cl-next">Next ▶</button>
+      </div>
+
+      <textarea id="cl-bulk" class="clhspg-textarea" placeholder="Paste: ID,Class,Year,Mark\nExample:\nD6880,3TB2,2025,10\nD7001,3TA1,2025,9"></textarea>
+      <div class="clhspg-row">
+        <button id="cl-save">Save List</button>
+        <button id="cl-clear">Clear List</button>
+        <div class="clhspg-note">Saved locally. Lines: ID,Class,Year,Mark (Mark optional)</div>
+      </div>
+    `;
+    document.body.appendChild(box);
+
+    // Prefill single fields from current URL if present
+    const idInUrl   = getParam('prmStudentID');
+    const classInUrl= getParam('prmClass');
+    const yearInUrl = getParam('prmYear');
+    if (idInUrl)   box.querySelector('#cl-id').value = idInUrl;
+    if (classInUrl)box.querySelector('#cl-class').value = classInUrl;
+    if (yearInUrl) box.querySelector('#cl-year').value = yearInUrl;
+
+    // Wire up events
+    const elCount = box.querySelector('#cl-count');
+    const elIdx   = box.querySelector('#cl-idx');
+    function refreshStatus() {
+      const list = loadList();
+      const idx  = loadIndex();
+      elCount.textContent = String(list.length);
+      elIdx.textContent   = list.length ? `${idx + 1}/${list.length}` : '0';
+    }
+    refreshStatus();
+
+    box.querySelector('#cl-open').addEventListener('click', () => {
+      const id = box.querySelector('#cl-id').value.trim();
+      const cls = box.querySelector('#cl-class').value.trim();
+      const year = box.querySelector('#cl-year').value.trim() || (getParam('prmYear') || new Date().getFullYear());
+      if (!id || !cls) {
+        toast('Please fill Student ID and Class', true);
+        return;
+      }
+      location.assign(buildStudentUrl(id, year, cls));
+    });
+
+    box.querySelector('#cl-select').addEventListener('click', async () => {
+      const m = Number(box.querySelector('#cl-mark').value);
+      if (!isFinite(m) || !(m in nilamMap)) {
+        toast('Nilam mark must be 10, 9, 8, 7, or 6', true);
+        return;
+      }
+      try {
+        await clickNilam(m);
+        toast(`Selected Nilam ${m}`);
+      } catch {
+        toast('Could not find Nilam radio buttons on this page.', true);
+      }
+    });
+
+    box.querySelector('#cl-save').addEventListener('click', () => {
+      const text = box.querySelector('#cl-bulk').value;
+      const parsed = parseLines(text);
+      saveList(parsed);
+      saveIndex(0);
+      refreshStatus();
+      toast(`Saved ${parsed.length} entries`);
+    });
+
+    box.querySelector('#cl-clear').addEventListener('click', () => {
+      saveList([]);
+      saveIndex(0);
+      refreshStatus();
+      toast('Cleared list');
+    });
+
+    box.querySelector('#cl-prev').addEventListener('click', () => goRelative(-1));
+    box.querySelector('#cl-next').addEventListener('click', () => goRelative(1));
+
+    // Keyboard shortcuts
+    window.addEventListener('keydown', (e) => {
+      // Ignore if typing in inputs/textarea
+      const tag = (e.target && e.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea') return;
+      if (e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+        if (e.key.toLowerCase() === 'n') { e.preventDefault(); goRelative(1); }
+        if (e.key.toLowerCase() === 'p') { e.preventDefault(); goRelative(-1); }
+      }
+    });
+  }
+
+  function toast(msg, bad=false) {
+    let el = document.getElementById('clhspg-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'clhspg-toast';
+      el.style.cssText = 'position:fixed;bottom:14px;right:14px;padding:10px 14px;background:#111;color:#fff;border-radius:10px;z-index:999999;opacity:0;transition:opacity .2s';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.style.background = bad ? '#b00020' : '#111';
+    requestAnimationFrame(() => el.style.opacity = '1');
+    setTimeout(() => el.style.opacity = '0', 1800);
+  }
+
+  function goRelative(delta) {
+    const list = loadList();
+    if (!list.length) { toast('List is empty', true); return; }
+    let idx = loadIndex();
+    idx += delta;
+    if (idx < 0) idx = 0;
+    if (idx >= list.length) idx = list.length - 1;
+    saveIndex(idx);
+    const item = list[idx];
+    // Navigate
+    location.assign(buildStudentUrl(item.id, item.year || (getParam('prmYear') || new Date().getFullYear()), item.class));
+  }
+
+  /*** --- Nilam Auto-Select on Load --- ***/
+  async function clickNilam(mark) {
+    if(confirm("Click nilam?")) {
+    const id = nilamMap[mark];
+    if (!id) throw new Error('No mapping');
+    // Wait for any one of the known radio ids to appear, then click the specific one
+    await waitForSelector('#' + id + ',#opt4_C41,#opt4_C42,#opt4_C43,#opt4_C44,#opt4_C45');
+    const radio = document.getElementById(id);
+    if (!radio) throw new Error('Radio not found');
+    // Some pages may require .click() twice or dispatch a change event
+    radio.click();
+    radio.dispatchEvent(new Event('change', { bubbles: true }));}
+  }
+
+  async function maybeAutoSelectFromListOrQuery() {
+    // 1) If prmNilam is present, prefer it
+    const prmNilam = Number(getParam('prmNilam'));
+    if (isFinite(prmNilam) && (prmNilam in nilamMap)) {
+      try { await clickNilam(prmNilam); toast(`Auto-selected Nilam ${prmNilam}`); } catch {}
+      return;
+    }
+    // 2) Try to match by StudentID in stored list
+    const currentID = getParam('prmStudentID');
+    if (!currentID) return;
+    const list = loadList();
+    const item = list.find(x => (x.id || '').toUpperCase() === currentID.toUpperCase());
+    if (item && item.mark && (item.mark in nilamMap)) {
+      try { await clickNilam(item.mark); toast(`Auto-selected Nilam ${item.mark}`); } catch {}
     }
   }
 
-  GM_registerMenuCommand('Load student list', promptAndLoadList);
-  window.addEventListener('keydown', onHotkeys, true);
+  /*** --- Menu command to paste & save list quickly --- ***/
+  GM_registerMenuCommand('Paste list (ID,Class,Year,Mark) and save', async () => {
+    const t = prompt('Paste lines:\nID,Class,Year,Mark\nOne per line');
+    if (t) {
+      const parsed = parseLines(t);
+      saveList(parsed);
+      saveIndex(0);
+      alert(`Saved ${parsed.length} entries.`);
+      // Optionally go to first
+      if (parsed.length) location.assign(buildStudentUrl(parsed[0].id, parsed[0].year || (getParam('prmYear') || new Date().getFullYear()), parsed[0].class));
+    }
+  });
 
-  if (/\/frmENTExtraCC\.aspx$/i.test(location.pathname)) {
-    onStudentPage();
-  }
+  /*** --- Init --- ***/
+  injectPanel();
+  // Try auto-select on load
+  maybeAutoSelectFromListOrQuery();
+
 })();
