@@ -1,25 +1,62 @@
 // ==UserScript==
-// @name         CLHSPG Nilam Autofill
+// @name         CLHSPG fill NILAM
 // @namespace    http://tampermonkey.net/
-// @version      1.0
-// @description  Quickly navigate between students on frmENTExtraCC.aspx and auto-select Nilam mark radio button
+// @version      1.2.0
+// @description  Navigate Prev/Next through frmENTExtraCC.aspx students without losing the list; NILAM set only when you click the button
 // @author       You
 // @match        http://clhspg.com/*/frmENTExtraCC.aspx*
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=clhspg.com
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_registerMenuCommand
+// @run-at       document-idle
 // ==/UserScript==
 
-(function() {
+(function () {
   'use strict';
 
-  /*** --- Utilities --- ***/
-  const qs = new URLSearchParams(location.search);
-  const getParam = k => qs.get(k) || '';
+  // ---------- Utilities ----------
+  const qs = (s, r = document) => r.querySelector(s);
+  const sleep = (ms) => new Promise(res => setTimeout(res, ms));
 
-  // Map Nilam mark -> radio button ID
-  const nilamMap = {
+  function parseQuery(search) {
+    const p = new URLSearchParams(search || location.search);
+    const o = {};
+    for (const [k, v] of p.entries()) o[k] = v;
+    return o;
+  }
+
+  function setQuery(url, params) {
+    const u = new URL(url, location.href);
+    Object.entries(params).forEach(([k, v]) => {
+      if (v == null || v === '') u.searchParams.delete(k);
+      else u.searchParams.set(k, v);
+    });
+    return u.toString();
+  }
+
+  // Preserve ASP.NET session segment “/(S(...))/”
+  function currentSessionBase() {
+    const u = new URL(location.href);
+    const parts = u.pathname.split('/').filter(Boolean);
+    const fileIdx = parts.findIndex(p => p.toLowerCase().startsWith('frmentextracc.aspx'));
+    const keep = (fileIdx >= 0) ? '/' + parts.slice(0, fileIdx + 1).join('/') : u.pathname;
+    return u.origin + keep;
+  }
+
+  // ---------- Storage ----------
+  const KEY_LIST  = 'clhspg_extracc_batch_list_v1'; // array of {id, cls, mark, year}
+  const KEY_INDEX = 'clhspg_extracc_batch_index_v1';
+  const KEY_YEAR  = 'clhspg_extracc_default_year_v1';
+
+  const getList  = () => GM_getValue(KEY_LIST, []);
+  const setList  = (arr) => GM_setValue(KEY_LIST, arr);
+  const getIndex = () => GM_getValue(KEY_INDEX, 0);
+  const setIndex = (i) => GM_setValue(KEY_INDEX, i);
+  const getYear  = () => GM_getValue(KEY_YEAR, parseQuery().prmYear || String(new Date().getFullYear()));
+  const setYear  = (y) => GM_setValue(KEY_YEAR, y);
+
+  // ---------- NILAM radio mapping (manual only) ----------
+  const NILAM_MAP = {
     10: 'opt4_C41',
     9:  'opt4_C42',
     8:  'opt4_C43',
@@ -27,284 +64,251 @@
     6:  'opt4_C45'
   };
 
-  // Wait for an element by id (or any CSS selector)
-  function waitForSelector(selector, timeoutMs = 15000) {
-    return new Promise((resolve, reject) => {
-      const existing = document.querySelector(selector);
-      if (existing) return resolve(existing);
-      const obs = new MutationObserver(() => {
-        const el = document.querySelector(selector);
-        if (el) {
-          obs.disconnect();
-          resolve(el);
-        }
-      });
-      obs.observe(document.documentElement, { childList: true, subtree: true });
-      setTimeout(() => {
-        obs.disconnect();
-        reject(new Error('Timeout waiting for ' + selector));
-      }, timeoutMs);
-    });
+  async function setNilamRadio(mark) {
+    const id = NILAM_MAP[mark];
+    if (!id) return false;
+    let tries = 40;
+    while (tries-- > 0) {
+      const el = document.getElementById(id);
+      if (el) {
+        if (!el.checked) el.click(); // manual action OK
+        return true;
+      }
+      await sleep(125);
+    }
+    return false;
   }
 
-  // Build the stable page base preserving the (S(...)) path segment
-  function buildBaseUrl() {
-    // Strip everything after frmENTExtraCC.aspx
-    const basePath = location.pathname.replace(/frmENTExtraCC\.aspx.*/i, 'frmENTExtraCC.aspx');
-    return location.origin + basePath;
-  }
-
-  function buildStudentUrl(studentID, year, cls) {
-    const base = buildBaseUrl();
-    const p = new URLSearchParams({
-      prmAction: 'Edit',
-      prmStudentID: studentID,
-      prmYear: year,
-      prmClass: cls
-    });
-    return `${base}?${p.toString()}`;
-  }
-
-  // Persisted state
-  const STORE_KEY_LIST  = 'clhspg_nilam_list_v1';   // array of {id, class, year, mark}
-  const STORE_KEY_INDEX = 'clhspg_nilam_index_v1';  // number
-
-  function loadList() {
-    return GM_getValue(STORE_KEY_LIST, []);
-  }
-  function saveList(arr) {
-    GM_setValue(STORE_KEY_LIST, arr);
-  }
-  function loadIndex() {
-    return GM_getValue(STORE_KEY_INDEX, 0);
-  }
-  function saveIndex(i) {
-    GM_setValue(STORE_KEY_INDEX, i);
-  }
-
-  // Parse textarea lines: "D6880,3TB2,2025,10" (ID, Class, Year, Nilam)
-  function parseLines(text) {
-    const out = [];
+  function parseBatch(text, defaultYear) {
     const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    const out = [];
     for (const line of lines) {
-      // Allow CSV or spaced formats. Split by comma first; fallback to whitespace.
-      let parts = line.includes(',') ? line.split(',') : line.split(/\s+/);
-      parts = parts.map(s => s.trim());
-      const [id, cls, year, markStr] = parts;
-      if (!id || !cls) continue;
-      const yearNum = year ? String(year).trim() : (getParam('prmYear') || new Date().getFullYear());
-      const mark = markStr ? Number(markStr) : NaN;
-      out.push({ id, class: cls, year: yearNum, mark: isFinite(mark) ? mark : null });
+      const parts = line.split(/[,\|\t]/).map(s => s.trim()).filter(Boolean);
+      if (parts.length >= 2) {
+        const [id, cls, markMaybe] = parts;
+        const mark = markMaybe ? Number(markMaybe) : undefined;
+        out.push({ id, cls, mark, year: defaultYear });
+      }
     }
     return out;
   }
 
-  /*** --- Floating Control Panel --- ***/
-  function injectPanel() {
-    const style = document.createElement('style');
-    style.textContent = `
-      .clhspg-nav {
-        position: fixed; top: 200px; right: 10px; z-index: 999999;
-        background: #ffffff; border: 1px solid #ddd; border-radius: 12px;
-        box-shadow: 0 6px 24px rgba(0,0,0,0.15); padding: 10px; width: 460px; font: 12px/1.3 system-ui, Arial;
-      }
-      .clhspg-nav h3 { margin: 0 0 6px; font-size: 14px; }
-      .clhspg-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
-      .clhspg-row input[type="text"], .clhspg-row input[type="number"] {
-        flex: 1; padding: 6px 8px; border: 1px solid #ccc; border-radius: 8px;
-      }
-      .clhspg-row button {
-        padding: 6px 10px; border: 1px solid #888; background: #f7f7f7; border-radius: 8px; cursor: pointer;
-      }
-      .clhspg-row button:hover { background: #eee; }
-      .clhspg-textarea { width: 100%; height: 90px; box-sizing: border-box; padding: 6px 8px; border: 1px solid #ccc; border-radius: 8px; }
-      .clhspg-note { color: #555; font-size: 11px; }
-      .clhspg-bad { color: #b00020; }
-      .clhspg-good { color: #0b7a0b; }
-      .clhspg-chip { background:#eef; border:1px solid #cbd; padding:2px 6px; border-radius:999px; font-size:11px; }
+  function navigateTo(studentID, cls, year, action = 'Edit') {
+    const base = currentSessionBase();
+    const url = setQuery(base, {
+      prmAction: action,
+      prmStudentID: studentID,
+      prmYear: year,
+      prmClass: cls
+    });
+    location.href = url;
+  }
+
+  // ---------- Panel UI ----------
+  function makePanel() {
+    const wrap = document.createElement('div');
+    wrap.id = 'extracc-helper-panel';
+    wrap.style.cssText = `
+      position: fixed; z-index: 2147483647; top: 216px; right: 16px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: #ffffffee; border: 1px solid #ddd; border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      width: 380px; padding: 12px; backdrop-filter: blur(4px);
     `;
-    document.head.appendChild(style);
 
-    const box = document.createElement('div');
-    box.className = 'clhspg-nav';
-    box.innerHTML = `
-      <h3>ExtraCC Quick Nav <span class="clhspg-chip">Alt+N Next • Alt+P Prev</span></h3>
-
-      <div class="clhspg-row">
-        <input type="text" id="cl-id"   placeholder="Student ID (e.g., D6880)">
-        <input type="text" id="cl-class" placeholder="Class (e.g., 3TB2)">
-        <input type="number" id="cl-year" placeholder="Year" min="2000" max="2100" style="width: 80px;">
-      </div>
-      <div class="clhspg-row">
-        <input type="number" id="cl-mark" placeholder="Nilam mark 10–6" min="6" max="10">
-        <button id="cl-open">Open</button>
-        <button id="cl-select">Select Mark</button>
+    wrap.innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+        <strong style="font-size:14px;">ExtraCC Batch Helper</strong>
+        <button id="exh-close" title="Close" style="border:none;background:#f2f2f2;padding:4px 8px;border-radius:8px;cursor:pointer">×</button>
       </div>
 
-      <div class="clhspg-row">
-        <button id="cl-prev">◀ Prev</button>
-        <div id="cl-status" class="clhspg-note">List: <span id="cl-count">0</span> | Index: <span id="cl-idx">0</span></div>
-        <button id="cl-next">Next ▶</button>
+      <label style="display:block;font-size:12px;margin:6px 0 4px;">Default Year</label>
+      <input id="exh-year" type="number" min="2000" max="2100" style="width:95%;padding:6px 8px;border:1px solid #ccc;border-radius:8px;" />
+
+      <label style="display:block;font-size:12px;margin:10px 0 4px;">Batch (StudentID,Class[,NilamMark]) — one per line</label>
+      <textarea id="exh-batch" rows="6" placeholder="D6880,3TB2,10&#10;D7001,3TA1,8&#10;D7002,3TA2"
+        style="width:95%;padding:8px;border:1px solid #ccc;border-radius:8px;resize:vertical;"></textarea>
+
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+        <button id="exh-load"  style="flex:1;border:none;background:#e8f3ff;padding:8px;border-radius:8px;cursor:pointer">Load List</button>
+        <button id="exh-save"  style="flex:1;border:none;background:#dff7df;padding:8px;border-radius:8px;cursor:pointer">Save</button>
+        <button id="exh-clear" style="flex:1;border:none;background:#ffe8e8;padding:8px;border-radius:8px;cursor:pointer">Clear</button>
       </div>
 
-      <textarea id="cl-bulk" class="clhspg-textarea" placeholder="Paste: ID,Class,Year,Mark\nExample:\nD6880,3TB2,2025,10\nD7001,3TA1,2025,9"></textarea>
-      <div class="clhspg-row">
-        <button id="cl-save">Save List</button>
-        <button id="cl-clear">Clear List</button>
-        <div class="clhspg-note">Saved locally. Lines: ID,Class,Year,Mark (Mark optional)</div>
+      <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+        <button id="exh-prev"  title="Alt+P" style="flex:1;border:none;background:#444;color:#fff;padding:10px;border-radius:8px;cursor:pointer">Previous (Alt+P)</button>
+        <button id="exh-next"  title="Alt+N" style="flex:1;border:none;background:#222;color:#fff;padding:10px;border-radius:8px;cursor:pointer">Next (Alt+N)</button>
+        <button id="exh-nilam"                style="flex:1;border:1px solid #333;background:#fff;color:#111;padding:10px;border-radius:8px;cursor:pointer">Set NILAM Now</button>
       </div>
+
+      <div style="display:flex;gap:6px;margin-top:8px;align-items:center;">
+        <label for="exh-jump" style="font-size:12px;white-space:nowrap;">Jump to #</label>
+        <input id="exh-jump" type="number" min="1" value="1" style="width:80px;padding:6px 8px;border:1px solid #ccc;border-radius:8px;">
+        <button id="exh-go" style="border:none;background:#f6f6f6;padding:8px 10px;border-radius:8px;cursor:pointer">Go</button>
+      </div>
+
+      <div id="exh-status" style="margin-top:8px;font-size:12px;color:#333"></div>
     `;
-    document.body.appendChild(box);
 
-    // Prefill single fields from current URL if present
-    const idInUrl   = getParam('prmStudentID');
-    const classInUrl= getParam('prmClass');
-    const yearInUrl = getParam('prmYear');
-    if (idInUrl)   box.querySelector('#cl-id').value = idInUrl;
-    if (classInUrl)box.querySelector('#cl-class').value = classInUrl;
-    if (yearInUrl) box.querySelector('#cl-year').value = yearInUrl;
+    document.body.appendChild(wrap);
 
-    // Wire up events
-    const elCount = box.querySelector('#cl-count');
-    const elIdx   = box.querySelector('#cl-idx');
-    function refreshStatus() {
-      const list = loadList();
-      const idx  = loadIndex();
-      elCount.textContent = String(list.length);
-      elIdx.textContent   = list.length ? `${idx + 1}/${list.length}` : '0';
-    }
-    refreshStatus();
+    const elYear   = qs('#exh-year', wrap);
+    const elBatch  = qs('#exh-batch', wrap);
+    const elStatus = qs('#exh-status', wrap);
+    const elJump   = qs('#exh-jump', wrap);
 
-    box.querySelector('#cl-open').addEventListener('click', () => {
-      const id = box.querySelector('#cl-id').value.trim();
-      const cls = box.querySelector('#cl-class').value.trim();
-      const year = box.querySelector('#cl-year').value.trim() || (getParam('prmYear') || new Date().getFullYear());
-      if (!id || !cls) {
-        toast('Please fill Student ID and Class', true);
-        return;
-      }
-      location.assign(buildStudentUrl(id, year, cls));
-    });
+    // Load existing
+    elYear.value = getYear();
+    elBatch.value = getList().map(row => [row.id, row.cls, row.mark ?? ''].filter(Boolean).join(',')).join('\n');
+    updateStatus();
 
-    box.querySelector('#cl-select').addEventListener('click', async () => {
-      const m = Number(box.querySelector('#cl-mark').value);
-      if (!isFinite(m) || !(m in nilamMap)) {
-        toast('Nilam mark must be 10, 9, 8, 7, or 6', true);
-        return;
-      }
-      try {
-        await clickNilam(m);
-        toast(`Selected Nilam ${m}`);
-      } catch {
-        toast('Could not find Nilam radio buttons on this page.', true);
-      }
-    });
+    qs('#exh-close', wrap).onclick = () => wrap.remove();
+    qs('#exh-load',  wrap).onclick = () => {
+      const list = parseBatch(elBatch.value, elYear.value.trim());
+      setList(list);
+      setIndex(0); // start at first item
+      setYear(elYear.value.trim());
+      updateStatus();
+      alert('List loaded. Ready.');
+    };
+    qs('#exh-save',  wrap).onclick = () => { setYear(elYear.value.trim()); alert('Saved default year.'); };
+    qs('#exh-clear', wrap).onclick = () => {
+      // Clears stored list/index, but does not alter your current page.
+      setList([]); setIndex(0); elBatch.value = '';
+      updateStatus(); alert('Cleared.');
+    };
+    qs('#exh-prev',  wrap).onclick = () => goPrevious();
+    qs('#exh-next',  wrap).onclick = () => goNext();
+    qs('#exh-nilam', wrap).onclick = () => manualNilamForCurrent();
 
-    box.querySelector('#cl-save').addEventListener('click', () => {
-      const text = box.querySelector('#cl-bulk').value;
-      const parsed = parseLines(text);
-      saveList(parsed);
-      saveIndex(0);
-      refreshStatus();
-      toast(`Saved ${parsed.length} entries`);
-    });
+    // Jump to arbitrary index (1-based UI, 0-based storage)
+    qs('#exh-go', wrap).onclick = () => {
+      const oneBased = parseInt(elJump.value || '1', 10);
+      if (isNaN(oneBased) || oneBased < 1) return alert('Enter a valid number ≥ 1.');
+      gotoIndex(oneBased - 1);
+    };
 
-    box.querySelector('#cl-clear').addEventListener('click', () => {
-      saveList([]);
-      saveIndex(0);
-      refreshStatus();
-      toast('Cleared list');
-    });
-
-    box.querySelector('#cl-prev').addEventListener('click', () => goRelative(-1));
-    box.querySelector('#cl-next').addEventListener('click', () => goRelative(1));
-
-    // Keyboard shortcuts
+    // Hotkeys
     window.addEventListener('keydown', (e) => {
-      // Ignore if typing in inputs/textarea
-      const tag = (e.target && e.target.tagName || '').toLowerCase();
-      if (tag === 'input' || tag === 'textarea') return;
-      if (e.altKey && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
-        if (e.key.toLowerCase() === 'n') { e.preventDefault(); goRelative(1); }
-        if (e.key.toLowerCase() === 'p') { e.preventDefault(); goRelative(-1); }
-      }
-    });
-  }
+      if (e.altKey && (e.key === 'n' || e.key === 'N')) { e.preventDefault(); goNext(); }
+      if (e.altKey && (e.key === 'p' || e.key === 'P')) { e.preventDefault(); goPrevious(); }
+    }, { capture: true });
 
-  function toast(msg, bad=false) {
-    let el = document.getElementById('clhspg-toast');
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'clhspg-toast';
-      el.style.cssText = 'position:fixed;bottom:14px;right:14px;padding:10px 14px;background:#111;color:#fff;border-radius:10px;z-index:999999;opacity:0;transition:opacity .2s';
-      document.body.appendChild(el);
+    function updateStatus() {
+      const list = getList();
+      const idx  = getIndex();
+      const here = parseQuery();
+      const cur  = list[idx];
+      const hereTxt = `${here.prmStudentID || '-'}${here.prmClass ? ' (' + here.prmClass + ')' : ''}`;
+
+      elStatus.innerHTML =
+        `Total: ${list.length} | Current Index: ${idx + 1}/${Math.max(list.length, 1)}<br>` +
+        `Active Row: ${cur ? (cur.id + ' (' + cur.cls + ')') : '-'}<br>` +
+        `Here: ${hereTxt}`;
     }
-    el.textContent = msg;
-    el.style.background = bad ? '#b00020' : '#111';
-    requestAnimationFrame(() => el.style.opacity = '1');
-    setTimeout(() => el.style.opacity = '0', 1800);
-  }
 
-  function goRelative(delta) {
-    const list = loadList();
-    if (!list.length) { toast('List is empty', true); return; }
-    let idx = loadIndex();
-    idx += delta;
-    if (idx < 0) idx = 0;
-    if (idx >= list.length) idx = list.length - 1;
-    saveIndex(idx);
-    const item = list[idx];
-    // Navigate
-    location.assign(buildStudentUrl(item.id, item.year || (getParam('prmYear') || new Date().getFullYear()), item.class));
+    // expose updateStatus to others
+    makePanel.updateStatus = updateStatus;
   }
+  // allow other functions to call panel status update
+  makePanel.updateStatus = () => {};
 
-  /*** --- Nilam Auto-Select on Load --- ***/
-  async function clickNilam(mark) {
-    if(confirm("Click nilam?")) {
-    const id = nilamMap[mark];
-    if (!id) throw new Error('No mapping');
-    // Wait for any one of the known radio ids to appear, then click the specific one
-    await waitForSelector('#' + id + ',#opt4_C41,#opt4_C42,#opt4_C43,#opt4_C44,#opt4_C45');
-    const radio = document.getElementById(id);
-    if (!radio) throw new Error('Radio not found');
-    // Some pages may require .click() twice or dispatch a change event
-    radio.click();
-    radio.dispatchEvent(new Event('change', { bubbles: true }));}
-  }
-
-  async function maybeAutoSelectFromListOrQuery() {
-    // 1) If prmNilam is present, prefer it
-    const prmNilam = Number(getParam('prmNilam'));
-    if (isFinite(prmNilam) && (prmNilam in nilamMap)) {
-      try { await clickNilam(prmNilam); toast(`Auto-selected Nilam ${prmNilam}`); } catch {}
+  // ---------- Actions ----------
+  async function manualNilamForCurrent() {
+    const list = getList();
+    const idx  = getIndex();
+    if (!list.length || idx >= list.length) {
+      alert('No current row selected in the batch list.');
       return;
     }
-    // 2) Try to match by StudentID in stored list
-    const currentID = getParam('prmStudentID');
-    if (!currentID) return;
-    const list = loadList();
-    const item = list.find(x => (x.id || '').toUpperCase() === currentID.toUpperCase());
-    if (item && item.mark && (item.mark in nilamMap)) {
-      try { await clickNilam(item.mark); toast(`Auto-selected Nilam ${item.mark}`); } catch {}
+
+    // Ensure we are on the matching URL row
+    const params = parseQuery();
+    const cur = list[idx];
+    const yearDefault = getYear();
+    const hereMatches =
+      params?.prmStudentID === cur.id &&
+      params?.prmClass === cur.cls &&
+      String(params?.prmYear || '') === String(cur.year || yearDefault);
+
+    if (!hereMatches) {
+      alert(`Current page does not match the active row.\nActive: ${cur.id} (${cur.cls})\nHere: ${params.prmStudentID || '-'} (${params.prmClass || '-'})`);
+      return;
     }
+
+    let mark = cur.mark;
+    if (typeof mark !== 'number' || !(mark >= 6 && mark <= 10)) {
+      const input = prompt(`Enter NILAM mark (6–10) for ${cur.id} (${cur.cls}):`, '');
+      if (input == null) return;
+      const n = Number(input);
+      if (!(n >= 6 && n <= 10)) { alert('Invalid mark.'); return; }
+      mark = n;
+      // Save it back (list persists)
+      const l = getList();
+      if (l[idx] && l[idx].id === cur.id) { l[idx].mark = mark; setList(l); }
+    }
+
+    const ok = await setNilamRadio(mark);
+    if (!ok) alert('Could not find the NILAM radio on this page.');
   }
 
-  /*** --- Menu command to paste & save list quickly --- ***/
-  GM_registerMenuCommand('Paste list (ID,Class,Year,Mark) and save', async () => {
-    const t = prompt('Paste lines:\nID,Class,Year,Mark\nOne per line');
-    if (t) {
-      const parsed = parseLines(t);
-      saveList(parsed);
-      saveIndex(0);
-      alert(`Saved ${parsed.length} entries.`);
-      // Optionally go to first
-      if (parsed.length) location.assign(buildStudentUrl(parsed[0].id, parsed[0].year || (getParam('prmYear') || new Date().getFullYear()), parsed[0].class));
+  function gotoIndex(targetIdx) {
+    const list = getList();
+    const yearDefault = getYear();
+    if (!list.length) { alert('No batch list loaded.'); return; }
+    if (targetIdx < 0 || targetIdx >= list.length) {
+      alert(`Index out of range. Valid: 1 to ${list.length}.`);
+      return;
     }
+    setIndex(targetIdx);
+    const row = list[targetIdx];
+    navigateTo(row.id, row.cls, String(row.year || yearDefault), 'Edit');
+    makePanel.updateStatus();
+  }
+
+  function goNext() {
+    const list = getList();
+    let idx = getIndex();
+    if (!list.length) { alert('No batch list loaded. Paste rows and click "Load List" first.'); return; }
+
+    // If we're already on the current row page, move pointer forward, then navigate.
+    const params = parseQuery();
+    const cur = list[idx];
+    const yearDefault = getYear();
+    const hereMatches =
+      params?.prmStudentID === cur?.id &&
+      params?.prmClass === cur?.cls &&
+      String(params?.prmYear || '') === String(cur?.year || yearDefault);
+
+    if (hereMatches) idx++;
+    if (idx >= list.length) { alert('Reached the end of the list.'); setIndex(list.length - 1); makePanel.updateStatus(); return; }
+
+    setIndex(idx);
+    const next = list[idx];
+    navigateTo(next.id, next.cls, String(next.year || yearDefault), 'Edit');
+    makePanel.updateStatus();
+  }
+
+  function goPrevious() {
+    const list = getList();
+    let idx = getIndex();
+    if (!list.length) { alert('No batch list loaded.'); return; }
+
+    // If we're already aligned, step back once; if not aligned, just go to current idx
+    idx = Math.max(0, idx - 1);
+    setIndex(idx);
+
+    const yearDefault = getYear();
+    const prev = list[idx];
+    navigateTo(prev.id, prev.cls, String(prev.year || yearDefault), 'Edit');
+    makePanel.updateStatus();
+  }
+
+  // ---------- Menu & bootstrap ----------
+  GM_registerMenuCommand('Show ExtraCC Batch Helper', () => {
+    if (!document.getElementById('extracc-helper-panel')) makePanel();
   });
 
-  /*** --- Init --- ***/
-  injectPanel();
-  // Try auto-select on load
-  maybeAutoSelectFromListOrQuery();
-
+  // Auto-show panel
+  makePanel();
 })();
