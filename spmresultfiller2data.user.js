@@ -11,276 +11,598 @@
 // 1) PASTE YOUR EXTRACTED DATA HERE
 // ===============================
 const data = {
-  "5sa2": {
-    "050425070561": {
-      "BAHASA MELAYU": "B+",
-      "BAHASA INGGERIS": "A+",
-      "PENDIDIKAN MORAL": "B+",
-      "SEJARAH": "A",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A",
-      "SAINS KOMPUTER": "A-",
-      "FIZIK": "A-",
-      "KIMIA": "A-",
-      "BAHASA CINA": "B+"
-    },
-    "050630070501": {
-      "BAHASA MELAYU": "A+",
-      "BAHASA INGGERIS": "A+",
-      "PENDIDIKAN MORAL": "A-",
-      "SEJARAH": "A+",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A+",
-      "FIZIK": "A+",
-      "KIMIA": "A",
-      "BAHASA CINA": "B+"
-    },
-    "050717070109": {
-      "BAHASA MELAYU": "A-",
-      "BAHASA INGGERIS": "A+",
-      "PENDIDIKAN MORAL": "A",
-      "SEJARAH": "A+",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A+",
-      "FIZIK": "A+",
-      "KIMIA": "A+",
-      "BAHASA CINA": "A"
-    },
-    "051122070155": {
-      "BAHASA MELAYU": "A+",
-      "BAHASA INGGERIS": "A+",
-      "PENDIDIKAN MORAL": "A",
-      "SEJARAH": "A+",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A+",
-      "FIZIK": "A+",
-      "KIMIA": "A+",
-      "BAHASA CINA": "A+"
-    },
-    "050613070753": {
-      "BAHASA MELAYU": "A+",
-      "BAHASA INGGERIS": "A+",
-      "PENDIDIKAN MORAL": "A-",
-      "SEJARAH": "A+",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A+",
-      "FIZIK": "A+",
-      "KIMIA": "A+",
-      "BAHASA CINA": "A"
-    },
-    "050331070069": {
-      "BAHASA MELAYU": "A+",
-      "BAHASA INGGERIS": "A+",
-      "PENDIDIKAN MORAL": "A",
-      "SEJARAH": "A+",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A+",
-      "FIZIK": "A+",
-      "KIMIA": "A+",
-      "BAHASA CINA": "B+"
-    },
-    "051018070315": {
-      "BAHASA MELAYU": "A-",
-      "BAHASA INGGERIS": "A+",
-      "PENDIDIKAN MORAL": "A",
-      "SEJARAH": "A",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "B",
-      "SAINS KOMPUTER": "A",
-      "FIZIK": "B+",
-      "KIMIA": "B+",
-      "BAHASA CINA": "A-"
-    },
-    "050327070453": {
-      "BAHASA MELAYU": "A",
-      "BAHASA INGGERIS": "A",
-      "PENDIDIKAN MORAL": "A",
-      "SEJARAH": "A+",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A+",
-      "FIZIK": "A+",
-      "KIMIA": "A",
-      "BAHASA CINA": "A-"
-    },
-    "050912070649": {
-      "BAHASA MELAYU": "A-",
-      "BAHASA INGGERIS": "A+",
-      "PENDIDIKAN MORAL": "B+",
-      "SEJARAH": "A-",
-      "MATEMATIK": "A",
-      "MATEMATIK TAMBAHAN": "B",
-      "SAINS KOMPUTER": "B+",
-      "FIZIK": "A-",
-      "KIMIA": "C+",
-      "BAHASA CINA": "A-"
-    },
-    "050414070291": {
-      "BAHASA MELAYU": "A+",
-      "BAHASA INGGERIS": "A+",
-      "PENDIDIKAN MORAL": "A-",
-      "SEJARAH": "A+",
-      "MATEMATIK": "A+",
-      "PENDIDIKAN SENI VISUAL": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A+",
-      "FIZIK": "A+",
-      "KIMIA": "A+",
-      "BAHASA CINA": "A"
-    },
-    "051207070509": {
-      "BAHASA MELAYU": "A",
-      "BAHASA INGGERIS": "A",
-      "PENDIDIKAN MORAL": "A",
-      "SEJARAH": "A-",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A",
-      "SAINS KOMPUTER": "A+",
-      "FIZIK": "A",
-      "KIMIA": "A",
-      "BAHASA CINA": "B"
-    },
-    "050131070267": {
-      "BAHASA MELAYU": "A-",
-      "BAHASA INGGERIS": "A+",
-      "PENDIDIKAN MORAL": "A",
-      "SEJARAH": "A+",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A+",
-      "FIZIK": "A+",
-      "KIMIA": "A+",
-      "BAHASA CINA": "A"
-    },
-    "051108070693": {
-      "BAHASA MELAYU": "A",
-      "BAHASA INGGERIS": "A",
-      "PENDIDIKAN MORAL": "A-",
-      "SEJARAH": "A",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "PRINSIP PERAKAUNAN": "A+",
-      "EKONOMI": "A+",
-      "SAINS KOMPUTER": "A",
-      "FIZIK": "A+",
-      "KIMIA": "A+",
-      "BAHASA CINA": "A"
-    },
-    "050601070633": {
-      "BAHASA MELAYU": "B",
-      "BAHASA INGGERIS": "A",
-      "PENDIDIKAN MORAL": "A-",
-      "SEJARAH": "A",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A",
-      "FIZIK": "A+",
-      "KIMIA": "A",
-      "BAHASA CINA": "C"
-    },
-    "050403070149": {
-      "BAHASA MELAYU": "A-",
-      "BAHASA INGGERIS": "A+",
-      "PENDIDIKAN MORAL": "A-",
-      "SEJARAH": "A",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A",
-      "FIZIK": "A+",
-      "KIMIA": "A",
-      "BAHASA CINA": "B+"
-    },
-    "050704070599": {
-      "BAHASA MELAYU": "B+",
-      "BAHASA INGGERIS": "A+",
-      "PENDIDIKAN MORAL": "A",
-      "SEJARAH": "B",
-      "MATEMATIK": "A",
-      "MATEMATIK TAMBAHAN": "B",
-      "SAINS KOMPUTER": "B+",
-      "FIZIK": "C",
-      "KIMIA": "D",
-      "BAHASA CINA": "B"
-    },
-    "051024070717": {
-      "BAHASA MELAYU": "A+",
-      "BAHASA INGGERIS": "A",
-      "PENDIDIKAN MORAL": "B+",
-      "SEJARAH": "A+",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A+",
-      "FIZIK": "A+",
-      "KIMIA": "A+",
-      "BAHASA CINA": "A"
-    },
-    "050731070041": {
-      "BAHASA MELAYU": "A",
-      "BAHASA INGGERIS": "A",
-      "PENDIDIKAN MORAL": "A",
-      "SEJARAH": "A+",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A",
-      "FIZIK": "A",
-      "KIMIA": "A+",
-      "BAHASA CINA": "B+"
-    },
-    "050710070309": {
-      "BAHASA MELAYU": "A+",
-      "BAHASA INGGERIS": "A+",
-      "PENDIDIKAN MORAL": "A",
-      "SEJARAH": "A+",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A+",
-      "FIZIK": "A+",
-      "KIMIA": "A+",
-      "BAHASA CINA": "B"
-    },
-    "050125070295": {
-      "BAHASA MELAYU": "B+",
-      "BAHASA INGGERIS": "A-",
-      "PENDIDIKAN MORAL": "A",
-      "SEJARAH": "C+",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "B",
-      "SAINS KOMPUTER": "A-",
-      "FIZIK": "B+",
-      "KIMIA": "B+",
-      "BAHASA CINA": "B+"
-    },
-    "051012070525": {
-      "BAHASA MELAYU": "A+",
-      "BAHASA INGGERIS": "A-",
-      "PENDIDIKAN MORAL": "A",
-      "SEJARAH": "A+",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A+",
-      "SAINS KOMPUTER": "A",
-      "FIZIK": "B+",
-      "KIMIA": "B",
-      "BAHASA CINA": "A-"
-    },
-    "050310070713": {
-      "BAHASA MELAYU": "A-",
-      "BAHASA INGGERIS": "A",
-      "PENDIDIKAN MORAL": "B+",
-      "SEJARAH": "C+",
-      "MATEMATIK": "A+",
-      "MATEMATIK TAMBAHAN": "A",
-      "SAINS KOMPUTER": "A",
-      "FIZIK": "B",
-      "KIMIA": "D",
-      "BAHASA CINA": "B+"
-    }
+  "080415070231": {
+    "BAHASA MELAYU": "B+",
+    "BAHASA INGGERIS": "A+",
+    "PENDIDIKAN MORAL": "A",
+    "SEJARAH": "B",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "C+",
+    "FIZIK": "B+",
+    "KIMIA": "A-",
+    "BIOLOGI": "B+",
+    "BAHASA CINA": "C+"
+  },
+  "080318070555": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "B",
+    "SEJARAH": "C+",
+    "MATEMATIK": "D",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "E",
+    "KIMIA": "G",
+    "BIOLOGI": "E",
+    "BAHASA CINA": "E"
+  },
+  "080714070135": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "C",
+    "MATEMATIK": "A",
+    "PENDIDIKAN SENI VISUAL": "A+",
+    "MATEMATIK TAMBAHAN": "D",
+    "FIZIK": "C+",
+    "KIMIA": "D",
+    "BIOLOGI": "B",
+    "BAHASA CINA": "B"
+  },
+  "081122070443": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "A-",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "B",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "D",
+    "FIZIK": "C+",
+    "KIMIA": "C+",
+    "BIOLOGI": "B+",
+    "BAHASA CINA": "C+"
+  },
+  "080128070159": {
+    "BAHASA MELAYU": "D",
+    "BAHASA INGGERIS": "B+",
+    "PENDIDIKAN MORAL": "G",
+    "SEJARAH": "E",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "E",
+    "KIMIA": "D",
+    "BIOLOGI": "G",
+    "BAHASA CINA": "C"
+  },
+  "081215071007": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "A+",
+    "PENDIDIKAN MORAL": "C+",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "D",
+    "FIZIK": "C+",
+    "KIMIA": "D",
+    "BIOLOGI": "B",
+    "BAHASA CINA": "C"
+  },
+  "080904070531": {
+    "BAHASA MELAYU": "B+",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "A-",
+    "SEJARAH": "A-",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "D",
+    "FIZIK": "B+",
+    "KIMIA": "B+",
+    "BIOLOGI": "A-",
+    "BAHASA CINA": "B"
+  },
+  "080515070861": {
+    "BAHASA MELAYU": "B+",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "A-",
+    "SEJARAH": "D",
+    "MATEMATIK": "D",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "D",
+    "KIMIA": "E",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "C+"
+  },
+  "080119070333": {
+    "BAHASA MELAYU": "D",
+    "BAHASA INGGERIS": "C+",
+    "PENDIDIKAN MORAL": "D",
+    "SEJARAH": "C",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "B",
+    "KIMIA": "D",
+    "BIOLOGI": "E",
+    "BAHASA CINA": "B"
+  },
+  "080412070789": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "B",
+    "SEJARAH": "C",
+    "MATEMATIK": "A-",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "C+",
+    "KIMIA": "E",
+    "BIOLOGI": "B",
+    "BAHASA CINA": "B+"
+  },
+  "080722070629": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "A-",
+    "PENDIDIKAN MORAL": "B",
+    "SEJARAH": "C",
+    "MATEMATIK": "B",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "D",
+    "KIMIA": "E",
+    "BIOLOGI": "E",
+    "BAHASA CINA": "B+"
+  },
+  "081011071179": {
+    "BAHASA MELAYU": "C",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "B",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "B",
+    "KIMIA": "D",
+    "BIOLOGI": "B+",
+    "BAHASA CINA": "C+"
+  },
+  "080116070629": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "A-",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "C",
+    "KIMIA": "D",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "C"
+  },
+  "080908070467": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "C+",
+    "KIMIA": "C",
+    "BIOLOGI": "C",
+    "BAHASA CINA": "C+"
+  },
+  "081203070293": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "C+",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "D",
+    "FIZIK": "D",
+    "KIMIA": "E",
+    "BIOLOGI": "E",
+    "BAHASA CINA": "B"
+  },
+  "081108070295": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "C+",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "C",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "D",
+    "KIMIA": "D",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "B"
+  },
+  "080524070361": {
+    "BAHASA MELAYU": "A",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "C+",
+    "SEJARAH": "A-",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "C+",
+    "FIZIK": "C",
+    "KIMIA": "B",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "C+"
+  },
+  "080306070347": {
+    "BAHASA MELAYU": "C",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "C+",
+    "SEJARAH": "B",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "C",
+    "KIMIA": "E",
+    "BIOLOGI": "C",
+    "BAHASA CINA": "C"
+  },
+  "081230070205": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "C",
+    "SEJARAH": "C",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "C+",
+    "KIMIA": "D",
+    "BIOLOGI": "C",
+    "BAHASA CINA": "G"
+  },
+  "080217070409": {
+    "BAHASA MELAYU": "C",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "C",
+    "MATEMATIK": "B+",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "C",
+    "KIMIA": "D",
+    "BIOLOGI": "E",
+    "BAHASA CINA": "C+"
+  },
+  "080904070507": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "A+",
+    "PENDIDIKAN MORAL": "A-",
+    "SEJARAH": "C",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "C",
+    "KIMIA": "D",
+    "BIOLOGI": "C",
+    "BAHASA CINA": "D"
+  },
+  "081107070971": {
+    "BAHASA MELAYU": "C",
+    "BAHASA INGGERIS": "A-",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A+",
+    "MATEMATIK TAMBAHAN": "B+",
+    "FIZIK": "A-",
+    "KIMIA": "B+",
+    "BIOLOGI": "C+",
+    "BAHASA CINA": "B"
+  },
+  "080503070629": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "A-",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "A-",
+    "MATEMATIK": "A+",
+    "MATEMATIK TAMBAHAN": "A",
+    "FIZIK": "D",
+    "KIMIA": "E",
+    "BIOLOGI": "G",
+    "BAHASA CINA": "B"
+  },
+  "080613070443": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "B",
+    "PENDIDIKAN MORAL": "B",
+    "SEJARAH": "B",
+    "MATEMATIK": "A+",
+    "MATEMATIK TAMBAHAN": "B",
+    "FIZIK": "C",
+    "KIMIA": "D",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "C+"
+  },
+  "080209070249": {
+    "BAHASA MELAYU": "B+",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "A-",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "D",
+    "FIZIK": "B",
+    "KIMIA": "B",
+    "BIOLOGI": "C+",
+    "BAHASA CINA": "B"
+  },
+  "081105070951": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "C",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "E",
+    "FIZIK": "C",
+    "KIMIA": "E",
+    "BIOLOGI": "C",
+    "BAHASA CINA": "C+"
+  },
+  "080504070575": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "C",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A+",
+    "PENDIDIKAN SENI VISUAL": "A+",
+    "MATEMATIK TAMBAHAN": "B",
+    "FIZIK": "B",
+    "KIMIA": "C",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "B"
+  },
+  "080822070597": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "A+",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "C",
+    "KIMIA": "E",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "B"
+  },
+  "080317020855": {
+    "BAHASA MELAYU": "D",
+    "BAHASA INGGERIS": "C",
+    "PENDIDIKAN MORAL": "D",
+    "SEJARAH": "D",
+    "MATEMATIK": "B+",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "E",
+    "KIMIA": "G",
+    "BIOLOGI": "G",
+    "BAHASA CINA": "B+"
+  },
+  "081209070315": {
+    "BAHASA MELAYU": "B+",
+    "BAHASA INGGERIS": "B+",
+    "PENDIDIKAN MORAL": "A",
+    "SEJARAH": "A-",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "E",
+    "FIZIK": "D",
+    "KIMIA": "D",
+    "BIOLOGI": "C",
+    "BAHASA CINA": "B"
+  },
+  "080328070161": {
+    "BAHASA MELAYU": "D",
+    "BAHASA INGGERIS": "D",
+    "PENDIDIKAN MORAL": "C+",
+    "SEJARAH": "C",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "D",
+    "KIMIA": "E",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "B+"
+  },
+  "080910070749": {
+    "BAHASA MELAYU": "C",
+    "BAHASA INGGERIS": "A+",
+    "PENDIDIKAN MORAL": "C+",
+    "SEJARAH": "C",
+    "MATEMATIK": "A+",
+    "MATEMATIK TAMBAHAN": "B",
+    "FIZIK": "B",
+    "KIMIA": "D",
+    "BIOLOGI": "C",
+    "BAHASA CINA": "D"
+  },
+  "080125070671": {
+    "BAHASA MELAYU": "A-",
+    "BAHASA INGGERIS": "A+",
+    "PENDIDIKAN MORAL": "A",
+    "SEJARAH": "A-",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "C",
+    "FIZIK": "D",
+    "KIMIA": "C",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "B+"
+  },
+  "081026070363": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "B+",
+    "PENDIDIKAN MORAL": "C+",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "E",
+    "FIZIK": "C",
+    "KIMIA": "D",
+    "BIOLOGI": "E",
+    "BAHASA CINA": "B"
+  },
+  "080225070505": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "A-",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "A-",
+    "MATEMATIK": "A+",
+    "MATEMATIK TAMBAHAN": "A",
+    "FIZIK": "B+",
+    "KIMIA": "A-",
+    "BIOLOGI": "B",
+    "BAHASA CINA": "B"
+  },
+  "080123080067": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "A-",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A+",
+    "MATEMATIK TAMBAHAN": "C",
+    "FIZIK": "C",
+    "KIMIA": "E",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "B+"
+  },
+  "080911070329": {
+    "BAHASA MELAYU": "B+",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "A",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A+",
+    "MATEMATIK TAMBAHAN": "C+",
+    "FIZIK": "C",
+    "KIMIA": "D",
+    "BIOLOGI": "C",
+    "BAHASA CINA": "B"
+  },
+  "081007070579": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "A-",
+    "PENDIDIKAN MORAL": "C",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "D",
+    "KIMIA": "E",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "C+"
+  },
+  "080610070325": {
+    "BAHASA MELAYU": "C",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "B",
+    "SEJARAH": "C",
+    "MATEMATIK": "D",
+    "MATEMATIK TAMBAHAN": "T",
+    "FIZIK": "G",
+    "KIMIA": "E",
+    "BIOLOGI": "E",
+    "BAHASA CINA": "D"
+  },
+  "080530070181": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "A-",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "B",
+    "MATEMATIK": "A+",
+    "MATEMATIK TAMBAHAN": "C+",
+    "FIZIK": "B",
+    "KIMIA": "C+",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "A-"
+  },
+  "080409070593": {
+    "BAHASA MELAYU": "B",
+    "BAHASA INGGERIS": "A+",
+    "PENDIDIKAN MORAL": "A-",
+    "SEJARAH": "B",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "E",
+    "FIZIK": "B+",
+    "KIMIA": "B",
+    "BIOLOGI": "C",
+    "BAHASA CINA": "B+"
+  },
+  "080215070261": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "C",
+    "MATEMATIK": "A+",
+    "MATEMATIK TAMBAHAN": "D",
+    "FIZIK": "C",
+    "KIMIA": "D",
+    "BIOLOGI": "C+",
+    "BAHASA CINA": "B+"
+  },
+  "080703070455": {
+    "BAHASA MELAYU": "B+",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "A",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "C+",
+    "FIZIK": "D",
+    "KIMIA": "E",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "B+"
+  },
+  "081227070407": {
+    "BAHASA MELAYU": "D",
+    "BAHASA INGGERIS": "A-",
+    "PENDIDIKAN MORAL": "C+",
+    "SEJARAH": "E",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "E",
+    "KIMIA": "E",
+    "BIOLOGI": "E",
+    "BAHASA CINA": "C"
+  },
+  "080324070199": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "A",
+    "SEJARAH": "B",
+    "MATEMATIK": "A+",
+    "MATEMATIK TAMBAHAN": "C",
+    "FIZIK": "C",
+    "KIMIA": "D",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "B+"
+  },
+  "080120070461": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "B",
+    "SEJARAH": "C+",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "C",
+    "KIMIA": "E",
+    "BIOLOGI": "D",
+    "BAHASA CINA": "A-"
+  },
+  "080813070253": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "A+",
+    "PENDIDIKAN MORAL": "A-",
+    "SEJARAH": "B",
+    "MATEMATIK": "A+",
+    "MATEMATIK TAMBAHAN": "E",
+    "FIZIK": "C",
+    "KIMIA": "D",
+    "BIOLOGI": "C",
+    "BAHASA CINA": "C+"
+  },
+  "080708070243": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "A",
+    "PENDIDIKAN MORAL": "A",
+    "SEJARAH": "C",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "C",
+    "KIMIA": "D",
+    "BIOLOGI": "B",
+    "BAHASA CINA": "C+"
+  },
+  "080517070291": {
+    "BAHASA MELAYU": "C+",
+    "BAHASA INGGERIS": "B",
+    "PENDIDIKAN MORAL": "B+",
+    "SEJARAH": "B+",
+    "MATEMATIK": "A",
+    "MATEMATIK TAMBAHAN": "G",
+    "FIZIK": "C+",
+    "KIMIA": "C+",
+    "BIOLOGI": "C+",
+    "BAHASA CINA": "C+"
   }
 };
+
 // ===============================
 // 2) PDF subject name -> website subject label
 // ===============================
@@ -289,20 +611,20 @@ const SUBJECT_ALIASES = {
   "BAHASA INGGERIS": "BAHASA INGGERIS",
   "PENDIDIKAN MORAL": "PENDIDIKAN MORAL",
   "SEJARAH": "SEJARAH",
-
   "MATEMATIK": "MATHEMATICS",
   "MATEMATIK TAMBAHAN": "ADDITIONAL MATHEMATICS",
   "FIZIK": "PHYSICS",
   "KIMIA": "CHEMISTRY",
   "BIOLOGI": "BIOLOGY",
   "SAINS": "SCIENCE",
-
   "BAHASA CINA": "BAHASA CINA",
-
   "SAINS KOMPUTER": "SAINS KOMPUTER",
-  "PRINSIP PERAKAUNAN": "PRINCIPLES OF ACCOUNTING",
-  "EKONOMI": "ECONOMICS",
-  "PENDIDIKAN SENI VISUAL": "VISUAL ARTS EDUCATION",
+  "PRINSIP PERAKAUNAN": "PRINSIP PERAKAUNAN",
+  "EKONOMI": "EKONOMI",
+  "PENDIDIKAN SENI VISUAL": "PENDIDIKAN SENI VISUAL",
+  "KESUSASTERAAN CINA":"KESUSASTERAAN CINA",
+  "BIBLE KNOWLEDGE":"BIBLE KNOWLEDGE",
+  "BAHASA JERMAN":"BAHASA JERMAN"
 };
 
 (function () {
@@ -314,13 +636,7 @@ const SUBJECT_ALIASES = {
     .toUpperCase()
     .replace(/\s+/g, " ");
 
-  const normClassKey = (s) => (s ?? "")
-    .toString()
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "");
-
-  const cleanIC = (s) => (s ?? "")
+   const cleanIC = (s) => (s ?? "")
     .toString()
     .replace(/\D/g, ""); // remove -, space, anything non-digit
 
@@ -356,6 +672,7 @@ const SUBJECT_ALIASES = {
   }
 
   function clickGradeInRow(tr, gradeRaw) {
+    if (gradeRaw == "T") gradeRaw = "TH";
     const grade = norm(gradeRaw);
     if (!grade) return { ok: false, reason: "Empty grade" };
 
@@ -414,51 +731,35 @@ const SUBJECT_ALIASES = {
     alert("SPM Auto Fill Result:\n\n" + log.join("\n"));
   }
 
-  function getCurrentClassAndIC() {
-    const classEl = document.getElementById("txtClassName");
-    const icEl = document.getElementById("txtICNo");
+function getCurrentIC() {
+  const icEl = document.getElementById("txtICNo");
 
-    const classRaw = classEl ? classEl.value : "";
-    const icRaw = icEl ? icEl.value : "";
+  const icRaw = icEl ? icEl.value : "";
+  const icKey = cleanIC(icRaw);
 
-    const classKey = normClassKey(classRaw);
-    const icKey = cleanIC(icRaw);
+  return {
+    icRaw,
+    icKey
+  };
+}
 
-    return {
-      classRaw,
-      icRaw,
-      classKey,
-      icKey
-    };
+function fillCurrentStudentFromData() {
+  const { icRaw, icKey } = getCurrentIC();
+
+  if (!icKey) {
+    alert('IC not found. Please check element id "txtICNo".');
+    return;
   }
 
-  function fillCurrentStudentFromData() {
-    const { classRaw, icRaw, classKey, icKey } = getCurrentClassAndIC();
+  const studentData = data[icKey];
 
-    if (!classKey) {
-      alert('Class not found. Please check element id "txtClassName".');
-      return;
-    }
-
-    if (!icKey) {
-      alert('IC not found. Please check element id "txtICNo".');
-      return;
-    }
-
-    const classData = data[classKey];
-    if (!classData) {
-      alert(`Class "${classRaw}" not found in data object.\nTried key: ${classKey}`);
-      return;
-    }
-
-    const studentData = classData[icKey];
-    if (!studentData) {
-      alert(`IC "${icRaw}" not found in data object.\nTried key: ${icKey}\nClass: ${classKey}`);
-      return;
-    }
-
-    applyResults(studentData);
+  if (!studentData) {
+    alert(`IC "${icRaw}" not found in data object.\nTried key: ${icKey}`);
+    return;
   }
+
+  applyResults(studentData);
+}
 
   function injectFillButton() {
     const cancelBtn = document.getElementById("cmdCancel");
