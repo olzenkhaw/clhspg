@@ -810,14 +810,25 @@
             }
         );
 
+        const merge = document.createElement('a');
 
+        merge.innerHTML =
+            '<p>Merge';
+
+        merge.href = "https://pajsk.clhs.edu.my/pajskdata.php";
+
+        Object.assign(
+            merge.style,
+            {
+                marginTop: '5px',
+                fontSize: '12px'
+            }
+        );
         panel.appendChild(title);
-
         panel.appendChild(button);
-
         panel.appendChild(status);
-
         panel.appendChild(detail);
+        detail.appendChild(merge);
 
 
         document.body.appendChild(panel);
