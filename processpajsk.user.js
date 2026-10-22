@@ -3,7 +3,7 @@
 // @namespace    clhs-gerko-auto
 // @version      4.0
 // @description  One click: Evaluation Form 1-6 then Borang C Form 1-6
-// @match        http://clhspg.com/*/frmGerkoEvaluationUpdate.aspx
+// @match        *://*.clhspg.com/*/frmGerkoEvaluationUpdate.aspx
 // @run-at       document-idle
 // @grant        none
 // ==/UserScript==
