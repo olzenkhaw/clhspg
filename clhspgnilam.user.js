@@ -4,8 +4,8 @@
 // @version      1.2.0
 // @description  Navigate Prev/Next through frmENTExtraCC.aspx students without losing the list; NILAM set only when you click the button
 // @author       You
-// @match        http://clhspg.com/*/frmENTExtraCC.aspx*
-// @match        http://clhspg.com/*/frmLstEntExtraCC.aspx*
+// @match        *://*.clhspg.com/*/frmENTExtraCC.aspx*
+// @match        *://*.clhspg.com/*/frmLstEntExtraCC.aspx*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_registerMenuCommand
