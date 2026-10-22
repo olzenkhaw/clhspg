@@ -4,7 +4,7 @@
 // @version      1.1
 // @description  Translate text from #txtEventName (English or Malay) to Chinese and insert into #txtEventNameC.
 // @author       You
-// @match        http://clhspg.com/*/frmMstGerkoEvent*
+// @match        *://*.clhspg.com/*/frmMstGerkoEvent*
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
