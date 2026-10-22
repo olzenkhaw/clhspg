@@ -4,7 +4,7 @@
 // @version      1.0
 // @description  Fetch and parse HTML response from clhspg.com
 // @author       You
-// @match        http://clhspg.com/*/frmLSTGerKoClubUpdEvent*
+// @match        *://*.clhspg.com/*/frmLSTGerKoClubUpdEvent*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_log
 // ==/UserScript==
