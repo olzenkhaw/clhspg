@@ -4,7 +4,7 @@
 // @version      2025-05-27
 // @description  try to take over the world!
 // @author       You
-// @match        http://clhspg.com/*/frmENTExamResult.aspx*
+// @match        *://*.clhspg.com/*/frmENTExamResult.aspx*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=clhspg.com
 // @grant        none
 // ==/UserScript==
