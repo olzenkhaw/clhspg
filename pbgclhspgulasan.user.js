@@ -4,7 +4,7 @@
 // @version      2024-06-27
 // @description  PBD Ulasan
 // @author       You
-// @match        http://clhspg.com/*/*Nilai.aspx?*
+// @match        *://*.clhspg.com/*/*Nilai.aspx?*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=clhspg.com
 // @grant        none
 // ==/UserScript==
