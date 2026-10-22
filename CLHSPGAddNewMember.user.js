@@ -4,7 +4,7 @@
 // @version      1.0
 // @description  Manage a list of names via local storage
 // @author       You
-// @match        http://clhspg.com/*/frmGerKoClubUpdMember*
+// @match        *://*.clhspg.com/*/frmGerKoClubUpdMember*
 // @grant        none
 // ==/UserScript==
 
