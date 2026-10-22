@@ -3,7 +3,7 @@
 // @namespace    clhspg
 // @version      2.0
 // @description  Fill SPM result radio buttons from built-in object data
-// @match        http://clhspg.com/*/frmENTPublicExam.aspx*
+// @match        *://*.clhspg.com/*/frmENTPublicExam.aspx*
 // @grant        GM_registerMenuCommand
 // ==/UserScript==
 
