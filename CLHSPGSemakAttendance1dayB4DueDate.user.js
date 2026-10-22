@@ -4,7 +4,7 @@
 // @version      2025-03-23
 // @description  try to take over the world!
 // @author       You
-// @match        http://clhspg.com/*)/frmLSTGerKoClubUpdEvent.aspx*
+// @match        *://*.clhspg.com/*)/frmLSTGerKoClubUpdEvent.aspx*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=clhspg.com
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
